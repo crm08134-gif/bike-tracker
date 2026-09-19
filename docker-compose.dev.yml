@@ -1,0 +1,6 @@
+# 개발용. IntelliJ bootRun 으로 호스트에서 띄운 Spring 이 추론 서버에 닿도록 포트만 엽니다.
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# ★ docker-compose.override.yml 로 이름을 바꾸지 마세요. 도커가 자동으로 읽어 운영에서도 포트가 열립니다.
+services:
+  inference:
+    ports: ["8000:8000"]

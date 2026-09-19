@@ -1,0 +1,29 @@
+# 루트 .gitignore
+# app-flutter / inference-fastapi / server-spring 은 각자 .gitignore 를 갖고 있습니다.
+# 여기에는 그 셋이 잡지 못하는 것과 저장소 전체에 공통인 것만 둡니다.
+
+# 파이썬 가상환경. 루트 .venv 는 1GB, inference-fastapi/.venv 는 876MB 입니다.
+# (inference-fastapi/.gitignore 에도 있지만 루트 것은 여기서만 잡힙니다.)
+.venv/
+__pycache__/
+*.pyc
+
+# 모델 가중치는 저장소에 올리지 않습니다. README 의 sha256 으로 검증해서 직접 복사합니다.
+# (inference-fastapi/.gitignore 가 이미 막고 있습니다. 실수로 풀리는 걸 막는 이중 잠금입니다.)
+inference-fastapi/models/*
+!inference-fastapi/models/README.md
+
+# DB 백업본. 볼륨을 옮길 때 루트에 두더라도 올라가지 않게 합니다.
+*.dump
+*.tgz
+*.tar.gz
+
+# OS / 편집기
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
+
+# 앱에서 내보낸 실제 GPS 기록 (개인 위치 정보라 저장소에 올리지 않습니다)
+app-flutter/exports/

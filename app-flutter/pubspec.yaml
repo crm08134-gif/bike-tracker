@@ -1,0 +1,52 @@
+name: my_gps_tracker
+description: "1단계 PoC - 백그라운드 1Hz GPS 수집 및 라벨링 로거"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 백그라운드 포그라운드 서비스 (서비스/알림 소유자)
+  flutter_background_service: ^5.1.0
+  flutter_background_service_android: ^6.2.7
+  # 알림 채널 생성용 (flutter_background_service가 요구)
+  flutter_local_notifications: ^17.2.3
+
+  # 위치 스트림 (포그라운드 서비스는 소유하지 않음 - 순수 스트림만)
+  geolocator: ^13.0.2
+
+  # 권한
+  permission_handler: ^11.3.1
+
+  # 로컬 DB
+  sqflite: ^2.3.3+1
+  path: ^1.9.0
+
+  # 식별자 영구 저장
+  shared_preferences: ^2.3.2
+  uuid: ^4.5.1
+
+  # 상태 관리
+  flutter_riverpod: ^2.5.1
+
+  # 업로드 (API 계약 v1 §6-2 #4 - 인터셉터/CancelToken 때문에 http 대신 dio)
+  dio: ^5.7.0
+
+  # CSV 내보내기
+  path_provider: ^2.1.4
+  share_plus: ^10.0.2
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  sqflite_common_ffi: ^2.4.2+1
+
+flutter:
+  uses-material-design: true

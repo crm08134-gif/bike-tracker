@@ -1,0 +1,93 @@
+{
+  "exported_at": "2026-09-12T12:52:33.853650+09:00",
+  "model_version": "korea_ft_fixed+pth:afcdb8eb8af2+pkl:3537170fedb9",
+  "sha256": {
+    "resnet18_korea_ft_fixed.pth": "afcdb8eb8af28cf06506802695c3984f82ccb34886b016dbed3c35d7d1ba9338",
+    "inference_artifacts.pkl": "3537170fedb9374f7632de5a93324098b771d52c20c8b41ce7d860982846f53d"
+  },
+  "classes": [
+    "bike",
+    "bus",
+    "car",
+    "subway",
+    "walk"
+  ],
+  "n_features": 178,
+  "n_pixels_used": 126,
+  "golden": {
+    "n": 11,
+    "label_match_rate": 0.45454545454545453,
+    "per_mode": {
+      "bike": 7,
+      "bus": 1,
+      "car": 1,
+      "subway": 1,
+      "walk": 1
+    }
+  },
+  "feature_columns_check": {
+    "missing": [],
+    "extra": []
+  },
+  "korea_sampling_interval": {
+    "median_sec": 1.0,
+    "mean_sec": 1.9590744768453043,
+    "p90_sec": 1.0,
+    "ratio_eq_1s": 0.9840071784911136,
+    "n_samples": 270809
+  },
+  "versions": {
+    "sklearn": "1.6.1",
+    "torch": "2.11.0+cu128",
+    "timm": "1.0.29",
+    "tsfel": "0.2.0",
+    "numpy": "2.1.3",
+    "pandas": "2.2.3"
+  },
+  "preprocess": {
+    "IMG_SIZE": 32,
+    "WINDOW_SIZE": 200,
+    "STRIDE": 100,
+    "ACC_FILTER_M": 20,
+    "STOP_THRESHOLD": 0.5,
+    "TSFEL_FS": 1.0,
+    "TSFEL_DOMAINS": [
+      "statistical",
+      "temporal",
+      "spectral"
+    ],
+    "TSFEL_SIGNALS": [
+      "speed_ms",
+      "acceleration_ms2",
+      "jerk_ms3"
+    ],
+    "MOTION_FEATURES": [
+      "speed_ms",
+      "acceleration_ms2",
+      "jerk_ms3",
+      "bearing_deg",
+      "bearing_rate_degs"
+    ],
+    "NORMALIZE": {
+      "mean": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "std": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "SEG_GAP_SEC": 300
+  },
+  "results": {
+    "zeroshot_group_acc": 58.119658119658126,
+    "finetune_group_acc": 79.97557997557998,
+    "zeroshot_bikewalk": 51.58227848101266,
+    "finetune_bikewalk": 75.63291139240506,
+    "best_val_acc": 57.17852684144818,
+    "dup_timestamp_ratio": 0.5637111924526332
+  }
+}

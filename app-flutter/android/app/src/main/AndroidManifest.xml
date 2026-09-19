@@ -1,0 +1,42 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<!--  ── 위치 권한 ────────────────────────────────────────────  -->
+<!--  정밀 위치. 1Hz 자전거 궤적에는 FINE이 필수  -->
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<!--  FINE 요청 시 함께 선언해야 시스템 다이얼로그가 정상 동작  -->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+<!--  화면 꺼짐/앱 백그라운드 상태에서 위치 수신. 설정앱에서 "항상 허용" 필요  -->
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+<!--  ── 포그라운드 서비스 ───────────────────────────────────  -->
+<!--  서비스 실행 자체에 필요  -->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+<!--  Android 14(API 34)부터 필수. 없으면 서비스 시작 시 SecurityException  -->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+<!--  ── 알림 ────────────────────────────────────────────────  -->
+<!--  Android 13(API 33)부터 필수. 없으면 포그라운드 알림이 표시되지 않음  -->
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<!--  ── 절전 대응 ───────────────────────────────────────────  -->
+<!--  Doze 모드에서 서비스 스레드가 잠들지 않게 함  -->
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
+<!--  배터리 최적화 예외 요청 다이얼로그 호출용  -->
+<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+<!--  재부팅 후 서비스 복구용 (선택)  -->
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+<!--  ── 네트워크 ────────────────────────────────────────────  -->
+<!--  서버 전송·판정 조회·지도 타일. debug/profile 매니페스트에만 있어서
+      release 빌드에서는 네트워크가 막혀 있었다  -->
+<uses-permission android:name="android.permission.INTERNET"/>
+<application android:label="my_gps_tracker" android:name="${applicationName}" android:icon="@mipmap/ic_launcher">
+<activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop" android:taskAffinity="" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
+<meta-data android:name="io.flutter.embedding.android.NormalTheme" android:resource="@style/NormalTheme"/>
+<intent-filter>
+<action android:name="android.intent.action.MAIN"/>
+<category android:name="android.intent.category.LAUNCHER"/>
+</intent-filter>
+</activity>
+<meta-data android:name="flutterEmbedding" android:value="2"/>
+<!--  ★ 핵심: flutter_background_service의 서비스에 location 타입을 강제 지정.
+             Android 14 이상에서 이 속성이 없으면 서비스 시작 즉시 크래시한다.
+             패키지가 이미 선언한 값을 덮어쓰므로 tools:replace가 필요하다.  -->
+<service android:name="id.flutter.flutter_background_service.BackgroundService" android:foregroundServiceType="location" android:exported="false" android:stopWithTask="false" tools:replace="android:foregroundServiceType,android:exported"/>
+</application>
+</manifest>

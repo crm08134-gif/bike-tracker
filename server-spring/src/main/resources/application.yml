@@ -1,0 +1,79 @@
+server:
+  port: 8080
+  compression:
+    # GET /predictions 가 페이지 없이 좌표 전부를 줍니다 (30분 약 1800점 ≈ 200KB).
+    # 기본 mime-types 에 application/json 이 들어 있고 2KB 미만 응답은 압축하지 않습니다.
+    enabled: true
+
+spring:
+  application:
+    name: bike-tracker
+  datasource:
+    # 기본값은 compose 네트워크 안의 주소입니다 (postgis:5432). IntelliJ bootRun 은 local 프로필에서
+    # localhost:5433 을 봅니다 (application-local.yml). 5432 는 로컬 PostgreSQL 이 씁니다.
+    url: jdbc:postgresql://${DB_HOST:postgis}:${DB_PORT:5432}/${DB_NAME:biketracker}
+    username: ${DB_USER:biketracker}
+    password: ${DB_PASSWORD:biketracker}
+    hikari:
+      maximum-pool-size: 10
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    # 앱과 Python 추론 서버가 모두 snake_case 를 씁니다 (session_id, window_start_ts, model_version).
+    # Java DTO 는 camelCase 로 두고 변환은 여기서 한 번에 합니다.
+    property-naming-strategy: SNAKE_CASE
+    deserialization:
+      fail-on-unknown-properties: false
+  http:
+    clients:
+      # 추론 호출용 타임아웃. RestClient 가 이 값을 그대로 씁니다.
+      # Boot 4.1 에서 spring.http.client.* 는 deprecated 이고 spring.http.clients.* 가 대체 키입니다.
+      imperative:
+        factory: jdk            # HTTP/1.1 고정은 HttpClientConfig 참고
+      connect-timeout: 2s
+      read-timeout: 30s
+
+tracker:
+  # 아래 네 값은 inference_artifacts.pkl 안의 전처리 값과 반드시 같아야 합니다.
+  # 기동 시 GET /v1/model 로 대조하고, 다르면 기동을 거부합니다.
+  accuracy-limit-m: 20
+  segment-gap-ms: 300000
+  window-size: 200
+  stride: 100
+
+  # 한 좌표가 두 묶음에 겹칠 때의 판정. AVERAGE_PROBS | STRICT_BIKE | LATEST_WINDOW
+  overlap-strategy: AVERAGE_PROBS
+  bike-label: bike
+
+  inference:
+    # compose 네트워크 안에서만 통하는 이름입니다. bootRun 은 local 프로필이 localhost:8000 으로 바꿉니다.
+    base-url: ${INFERENCE_URL:http://inference:8000}
+    # 타임아웃은 위의 spring.http.clients.* 에서 잡습니다.
+    max-retries: 3
+    retry-backoff: 1s
+    batch-threshold: 2      # 한 번에 이만큼 이상 밀렸으면 /v1/predict/batch 사용
+    # 한 요청에 보내는 묶음 수 상한. 실제 값은 min(/v1/model 의 max_batch_size, 이 값) 입니다.
+    # 서버가 알려주는 max_batch_size(256)는 256 x 묶음당 약 120ms = 30.7초로 read-timeout(30s)을 넘습니다.
+    # 30초 / 120ms = 250개가 한계이고, 추론 지연이 흔들리는 걸 감안해 안전계수 2배로 120 을 둡니다.
+    # read-timeout 이나 묶음당 지연이 바뀌면 같이 조정하세요. 남은 묶음은 다음 워커 주기에 이어서 보냅니다.
+    max-batch-chunk: 120
+    # 기동 시 GET /v1/model 로 window_size / stride / accuracy_limit / seg_gap_sec / bike-label 을 대조하고
+    # 다르면 기동을 거부합니다. 추론 서버가 아직 로드 중이면 startup-timeout 까지 기다립니다.
+    # false 는 DB 만 쓰는 테스트용입니다. 운영에서 끄지 마세요.
+    verify-on-startup: true
+    startup-timeout: 90s
+
+  session:
+    abandon-after: 15m      # 마지막 배치 이후 이 시간이 지나면 ABANDONED. 늦게 온 배치를 거부하지는 않습니다.
+    seq-gap-alert-after: 5m # next_seq 배치 없이 뒤 배치가 이만큼 기다리면 ERROR 로그
+
+  worker:
+    fixed-delay: PT3S           # 세그먼트 처리 주기 (@Scheduled 용이라 ISO-8601)
+    abandon-scan-delay: PT5M    # ABANDONED 검사 주기
+    seq-gap-scan-delay: PT5M    # seq 빈 자리 검사 주기. 멈춰 있는 동안 주기마다 다시 알립니다.
+    batch-size: 20              # 한 주기에 처리할 세그먼트 수
+
+logging:
+  level:
+    io.github.crm08134.biketracker: INFO

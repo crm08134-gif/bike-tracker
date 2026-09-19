@@ -1,0 +1,12 @@
+# IntelliJ bootRun 용 (build.gradle.kts 가 이 프로필을 켭니다).
+# Spring 은 호스트에서, PostGIS 와 추론 서버는 도커에서 돕니다. 컨테이너 이름(postgis, inference)은
+# 도커 네트워크 안에서만 통하므로 호스트로 열린 포트를 봅니다.
+#   추론 서버 포트는 루트의 docker-compose.dev.yml 이 엽니다.
+spring:
+  datasource:
+    # 호스트 포트는 5433 입니다. 5432 는 로컬 PostgreSQL 이 씁니다.
+    url: jdbc:postgresql://localhost:5433/biketracker
+
+tracker:
+  inference:
+    base-url: http://localhost:8000   # docker-compose.dev.yml 이 여는 포트

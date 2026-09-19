@@ -1,0 +1,19 @@
+# pkl 의 versions 와 일치시킨 고정 버전 (계획서 4절 검사 1)
+#
+# torch 만 예외적으로 '+cu128' 접미사를 뺐습니다. Colab 은 GPU 빌드였지만
+# 서빙은 CPU 이고, PyPI 의 기본 torch 휠은 NVIDIA 런타임 2.7GB 를 함께
+# 끌고 옵니다. 아래 --extra-index-url 의 CPU 휠을 쓰면 이미지가 훨씬 작고
+# 가중치·연산 결과는 동일합니다. startup_checks 는 '+' 앞부분만 비교하므로
+# 2.11.0+cpu 는 경고 없이 통과합니다.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+scikit-learn==1.6.1
+torch==2.11.0+cpu
+timm==1.0.29
+tsfel==0.2.0
+numpy==2.1.3
+pandas==2.2.3
+
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4

@@ -1,0 +1,5 @@
+models/
+golden/
+tests/
+__pycache__/
+*.pyc
